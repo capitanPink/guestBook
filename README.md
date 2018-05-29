@@ -1,1 +1,1 @@
-# Simpple guest book API
+# Simple guest book API
