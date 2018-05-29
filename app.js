@@ -1,11 +1,16 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var api = require('./routes/api');
+const { createTable } = require('./db/query');
+const { usersTableColumns, usersPostColumns } = require('./constants/dbColumns.js');
+const api = require('./routes/api');
 
-var app = express();
+createTable('customers', usersTableColumns);
+createTable('posts', usersTableColumns);
+
+const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());

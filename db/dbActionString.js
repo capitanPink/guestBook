@@ -11,6 +11,3 @@ exports.deleteFromTableString = (tableName, condition) =>
     
 exports.selectFromTableString = (tableName, columns, condition) =>
     (`SELECT ${columns} FROM ${tableName} WHERE ${condition}`);
-
-exports.createTableString = (tableName, columnsTypes) =>
-    (`CREATE TABLE IF NOT EXISTS ${tableName}(${columnsTypes})`);

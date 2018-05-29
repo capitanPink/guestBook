@@ -1,10 +1,9 @@
-const pool = require('./index');
+const { pool } = require('./index');
 const { dropTableString,
         createTableString,
         insetIntoTableString,
         deleteFromTableString,
-        selectFromTableString,
-        createTableString } = require('./dbActionString');
+        selectFromTableString } = require('./dbActionString');
 const { sysMessageError, sysMessageDB } = require('../constants/notifications');
 
 
