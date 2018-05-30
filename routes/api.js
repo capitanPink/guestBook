@@ -3,9 +3,9 @@ const express = require('express');
 const router = express.Router();
 
 /* GET users listing. */
-router.get('/GET_ALL_NOTES', (req, res, next) => {
+router.get('/test', (req, res, next) => {
 
-  res.send('respond with a resource');
+  res.send('order: ' + req.query.order + 'shoe-color: ' + req.query.shoe.color);
 });
 
 module.exports = router;
