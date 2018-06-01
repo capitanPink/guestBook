@@ -1,6 +1,5 @@
 const { pool } = require('./index');
-const { dropTableString,
-        createTableString,
+const { createTableString,
         insetIntoTableString,
         deleteFromTableString,
         selectFromTableString } = require('./dbActionString');
@@ -17,8 +16,9 @@ exports.createTable = async (tableName, tableCols) => {
 };
 
 exports.insertData = async (tableName, tableCols, colsValue) => {
-	const client = await pool.connect();
-	await client.query(insetIntoTable(tableName, tableCols, colsValue), (err, res) => {
+    const client = await pool.connect();
+    console.log(insetIntoTableString(tableName, tableCols, colsValue));
+	await client.query(insetIntoTableString(tableName, tableCols, colsValue), (err, res) => {
 		if (err) console.log(`${sysMessageError} ${err}`);
 		else console.log(`${sysMessageDB} Data into table ${tableName} was successfully passed.`);
 	});
@@ -29,7 +29,7 @@ exports.selectData = async (tableName, columns, condition) => {
     const client = await pool.connect();
 	let returnQuery;
     try {
-        returnQuery = await client.query(selectFromTable(tableName, columns, condition));
+        returnQuery = await client.query(selectFromTableString(tableName, columns, condition));
     } catch (error) {
     	console.error(`${sysMessageError} error is raised during select data process: ${error}`)
 	}
@@ -39,7 +39,7 @@ exports.selectData = async (tableName, columns, condition) => {
 
 exports.deleteData = async (tableName, condition) => {
 	const client = await pool.connect();
-    await client.query(deleteFromTable(tableName, condition), (err, res) => {
+    await client.query(deleteFromTableString(tableName, condition), (err, res) => {
         if (err) console.log(`${sysMessageError} ${err}`);
         else console.log(`${sysMessageDB} Data from table ${tableName} was successfully deleted.`);
     });
