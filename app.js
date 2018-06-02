@@ -10,7 +10,7 @@ const api = require('./routes/api');
 
 // Creating tables if it's needed
 createTable('customers', usersTableColumns);
-createTable('posts', usersTableColumns);
+createTable('posts', usersPostColumns);
 
 const app = express();
 

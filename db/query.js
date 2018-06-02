@@ -15,10 +15,9 @@ exports.createTable = async (tableName, tableCols) => {
     client.release();
 };
 
-exports.insertData = async (tableName, tableCols, colsValue) => {
+exports.insertData = async (tableName, tableCols, valuesNumbers, values) => {
     const client = await pool.connect();
-    console.log(insetIntoTableString(tableName, tableCols, colsValue));
-	await client.query(insetIntoTableString(tableName, tableCols, colsValue), (err, res) => {
+	await client.query(insetIntoTableString(tableName, tableCols, valuesNumbers), values, (err, res) => {
 		if (err) console.log(`${sysMessageError} ${err}`);
 		else console.log(`${sysMessageDB} Data into table ${tableName} was successfully passed.`);
 	});
