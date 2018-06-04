@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const { insertData, selectData } = require('../db/query');
+const { insertData, selectData, query } = require('../db/query');
+const { customers, posts } = require('../constants/tables');
 
 /* GET users listing. */
 router.get('/test', (req, res, next) => {
@@ -14,24 +15,60 @@ const valuesNumber = (array) => {
 }
 
 router.post('/ADD_NEW_INQUERY', (req, res, next) => {
-  const customersTable = 'customers';
-  const postsTable = 'posts';
   const { customer_name: customerName, customer_email: customerEmail, post_text: postText }  = req.body;
-  const customerTableColumns = ['customer_name', 'customer_email'].join();
+  const customerTableColumns = Object.values(customers.columns).join();
   const customerTableValues = [customerName, customerEmail];
-  insertData(customersTable, customerTableColumns, valuesNumber(customerTableValues), customerTableValues)
+  insertData(customers.tableName, customerTableColumns, valuesNumber(customerTableValues), customerTableValues)
     .then(() => {
-      selectData(customersTable, 'customer_id', `customer_email = '${customerEmail}'`)
+      const selectColumns = posts.columns.customerId;
+      const selectCondition = `customer_email = '${customerEmail}'`;
+      selectData(customers.tableName, selectColumns, selectCondition)
         .then(selectedId => {
           const customerId = selectedId[0].customer_id;
-          const postTableColumns = ['customer_id', 'post_text'].join();
+          const postTableColumns = Object.values(posts.columns).join();
           const postTableValues = [customerId, postText];
-          insertData(postsTable, postTableColumns, valuesNumber(postTableValues), postTableValues)
+          insertData(posts.tableName, postTableColumns, valuesNumber(postTableValues), postTableValues);
         });
     });
-  // const selectedData = selectData(customersTable, 'customer_id', `customer_email = '${customerEmail}'`);
-  // selectedData.then(res => console.log('res from table', res));
-  // res.send(req.body);
+});
+
+router.get('/GET_POSTS', (req, res, next) => {
+  const customerCustomersId = 'customers.customer_id';
+  const postCustomerId = 'posts.customer_id';
+  if (req.query.quantity === 'all') {
+    query(`SELECT * FROM ${customers.tableName}
+           LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
+           ORDER BY ${customerCustomersId} DESC`)
+      .then(response => res.json(response),
+            error => console.log(error)
+    )
+  } else if (typeof parseInt(req.query.quantity) === 'number' && req.query.quantity !== undefined) {
+    query(`SELECT * FROM ${customers.tableName}
+           LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
+           ORDER BY ${customerCustomersId} DESC
+           LIMIT ${req.query.quantity} OFFSET ${req.query.offset}`)
+      .then(response => res.json(response),
+            error => console.log(error)
+    )
+  } else if (req.query.email) {
+    const email = req.query.email;
+    query(`SELECT * FROM ${customers.tableName} 
+          LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
+          WHERE LOWER(${customers.columns.customerEmail}) = LOWER('${email}')
+          ORDER BY ${customerCustomersId} DESC`)
+      .then(response => res.json(response),
+      error => console.log(error)
+    )
+  } else if (req.query.name) {
+    const name = req.query.name;
+    query(`SELECT * FROM ${customers.tableName} 
+          LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
+          WHERE LOWER(${customers.columns.customerName}) = LOWER('${name}')
+          ORDER BY ${customerCustomersId} DESC`)
+      .then(response => res.json(response),
+      error => console.log(error)
+    )
+  }
 });
 
 module.exports = router;

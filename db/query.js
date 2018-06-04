@@ -25,15 +25,15 @@ exports.insertData = async (tableName, tableCols, valuesNumbers, values) => {
 }
 
 exports.selectData = async (tableName, columns, condition) => {
+    let returnedQuery;
     const client = await pool.connect();
-	let returnQuery;
     try {
-        returnQuery = await client.query(selectFromTableString(tableName, columns, condition));
+        returnedQuery = await client.query(selectFromTableString(tableName, columns, condition));
     } catch (error) {
     	console.error(`${sysMessageError} error is raised during select data process: ${error}`)
 	}
 	client.release();
-	return returnQuery.rows;
+	return returnedQuery.rows;
 }
 
 exports.deleteData = async (tableName, condition) => {
@@ -43,4 +43,15 @@ exports.deleteData = async (tableName, condition) => {
         else console.log(`${sysMessageDB} Data from table ${tableName} was successfully deleted.`);
     });
 	client.release();
+}
+
+exports.query = async (queryString) => {
+    let returnedQuery;
+    const client = await pool.connect();
+    try {
+        returnedQuery = await client.query(queryString);
+    } catch (error) {
+        console.error(`${sysMessageError} error is raised during select data process: ${error}`)
+    }
+    return returnedQuery.rows;
 }
