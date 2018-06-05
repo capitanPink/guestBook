@@ -35,27 +35,33 @@ router.post('/ADD_NEW_INQUERY', (req, res, next) => {
 router.get('/GET_POSTS', (req, res, next) => {
   const customerCustomersId = 'customers.customer_id';
   const postCustomerId = 'posts.customer_id';
-  if (req.query.quantity === 'all') {
+  const quantity = req.query.quantity;
+  const email = req.query.email;
+  const name = req.query.name;
+  const offset = req.query.offset ? req.query.offset : 0;
+  const limit = typeof parseInt(quantity) === 'number' ? `LIMIT ${quantity} OFFSET ${offset}` : '';
+  if (quantity === 'all' && !email && !name) {
     query(`SELECT * FROM ${customers.tableName}
            LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
            ORDER BY ${customerCustomersId} DESC`)
       .then(response => res.json(response),
             error => console.log(error)
     )
-  } else if (typeof parseInt(req.query.quantity) === 'number' && req.query.quantity !== undefined) {
+  } else if (!email && !name && quantity !== undefined && typeof parseInt(quantity) === 'number') {
+    const offsetNumber = offset ? offset : 0
     query(`SELECT * FROM ${customers.tableName}
            LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
            ORDER BY ${customerCustomersId} DESC
-           LIMIT ${req.query.quantity} OFFSET ${req.query.offset}`)
+           LIMIT ${quantity} OFFSET ${offsetNumber}`)
       .then(response => res.json(response),
             error => console.log(error)
     )
   } else if (req.query.email) {
-    const email = req.query.email;
     query(`SELECT * FROM ${customers.tableName} 
           LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
           WHERE LOWER(${customers.columns.customerEmail}) = LOWER('${email}')
-          ORDER BY ${customerCustomersId} DESC`)
+          ORDER BY ${customerCustomersId} DESC
+          ${limit}`)
       .then(response => res.json(response),
       error => console.log(error)
     )
@@ -64,7 +70,8 @@ router.get('/GET_POSTS', (req, res, next) => {
     query(`SELECT * FROM ${customers.tableName} 
           LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
           WHERE LOWER(${customers.columns.customerName}) = LOWER('${name}')
-          ORDER BY ${customerCustomersId} DESC`)
+          ORDER BY ${customerCustomersId} DESC
+          ${limit}`)
       .then(response => res.json(response),
       error => console.log(error)
     )
