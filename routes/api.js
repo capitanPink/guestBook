@@ -58,20 +58,20 @@ router.get('/GET_POSTS', (req, res, next) => {
     )
   } else if (req.query.email) {
     query(`SELECT * FROM ${customers.tableName} 
-          LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
-          WHERE LOWER(${customers.columns.customerEmail}) = LOWER('${email}')
-          ORDER BY ${customerCustomersId} DESC
-          ${limit}`)
+           LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
+           WHERE LOWER(${customers.columns.customerEmail}) = LOWER('${email}')
+           ORDER BY ${customerCustomersId} DESC
+           ${limit}`)
       .then(response => res.json(response),
       error => console.log(error)
     )
   } else if (req.query.name) {
     const name = req.query.name;
     query(`SELECT * FROM ${customers.tableName} 
-          LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
-          WHERE LOWER(${customers.columns.customerName}) = LOWER('${name}')
-          ORDER BY ${customerCustomersId} DESC
-          ${limit}`)
+           LEFT JOIN ${posts.tableName} on ${customerCustomersId} = ${postCustomerId}
+           WHERE LOWER(${customers.columns.customerName}) = LOWER('${name}')
+           ORDER BY ${customerCustomersId} DESC
+           ${limit}`)
       .then(response => res.json(response),
       error => console.log(error)
     )
