@@ -53,5 +53,5 @@ exports.query = async (queryString) => {
     } catch (error) {
         console.error(`${sysMessageError} error is raised during select data process: ${error}`)
     }
-    return returnedQuery.rows;
+    return returnedQuery ? returnedQuery.rows : {};
 }
